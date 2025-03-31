@@ -1,11 +1,7 @@
-cmake_minimum_required(VERSION 3.15)
-
-#
-# Project details
-#
+cmake_minimum_required(VERSION 3.21)
 
 project(
-  "Project"
+  "PhysicEngine"
   VERSION 0.1.0
   LANGUAGES CXX
 )
@@ -17,10 +13,6 @@ project(
 include(cmake/StandardSettings.cmake)
 include(cmake/StaticAnalyzers.cmake)
 include(cmake/Utils.cmake)
-if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE "Debug")
-endif()
-message(STATUS "Started CMake for ${PROJECT_NAME} v${PROJECT_VERSION}...\n")
 
 if (UNIX)
     add_compile_options("$<$<CONFIG:DEBUG>:-D_DEBUG>")    #this will allow to use same _DEBUG macro available in both Linux as well as Windows - MSCV environment. Easy to put Debug specific code.

@@ -43,7 +43,15 @@ foreach(file ${test_sources})
   endif()
 
   if(${CMAKE_PROJECT_NAME}_USE_GTEST)
-    find_package(GTest REQUIRED)
+    include(FetchContent)
+    FetchContent_Declare(
+        googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG        v1.16.0
+    )
+
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(googletest)
 
     if(${CMAKE_PROJECT_NAME}_USE_GOOGLE_MOCK)
       set(GOOGLE_MOCK_LIBRARIES GTest::gmock GTest::gmock_main)
@@ -52,8 +60,8 @@ foreach(file ${test_sources})
     target_link_libraries(
       ${test_name}_Tests
       PUBLIC
-        GTest::GTest
-        GTest::Main
+        GTest::gtest
+        GTest::gtest_main
         ${GOOGLE_MOCK_LIBRARIES}
         ${${CMAKE_PROJECT_NAME}_TEST_LIB}
     )
