@@ -4,11 +4,6 @@ set(sources
 	src/simulator.cpp
 )
 
-set(exe_sources
-		src/main.cpp
-		${sources}
-)
-
 set(headers
     include/physic_engine/tmp.hpp
 )
