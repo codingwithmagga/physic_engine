@@ -23,7 +23,8 @@ public:
 private:
     void processInput();
     unsigned int createVertexShader() const;
-    unsigned int createFragmentShader() const;
+    unsigned int createFragmentShaderOrange() const;
+    unsigned int createFragmentShaderYellow() const;
     unsigned int createShaderProgram(const unsigned int vertesShader, const unsigned int fragmenShader) const;
 
     GLFWwindow* m_window = nullptr;
