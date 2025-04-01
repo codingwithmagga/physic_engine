@@ -16,25 +16,92 @@ const char* fragmentShaderSource = "#version 460 core\n"
                                    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
                                    "}\n\0";
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+WindowManager::WindowManager()
 {
-    glViewport(0, 0, width, height);
-}
-
-void processInput(GLFWwindow* window)
-{
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-}
-
-void WindowManager::openWindow(const int width, const int height, const std::string& title)
-{
-
     if (!glfwInit())
     {
         std::cout << "Failed to initialize GLFW" << std::endl;
         return;
     }
+}
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    glViewport(0, 0, width, height);
+}
+
+void WindowManager::processInput()
+{
+
+    if (glfwGetKey(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    {
+        glfwSetWindowShouldClose(m_window, true);
+    }
+}
+
+
+unsigned int WindowManager::createVertexShader() const
+{
+    unsigned int vertexShader;
+    vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+    glCompileShader(vertexShader);
+
+    int success;
+    char infoLog[512];
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+
+    if (!success)
+    {
+        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
+
+    return vertexShader;
+}
+
+unsigned int WindowManager::createFragmentShader() const
+{
+    int success;
+    char infoLog[512];
+    unsigned int fragmentShader;
+    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+    glCompileShader(fragmentShader);
+
+    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+
+    if (!success)
+    {
+        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
+
+    return fragmentShader;
+}
+
+unsigned int WindowManager::createShaderProgram(const unsigned int vertexShader, const unsigned int fragmentShader) const
+{
+    int success;
+    char infoLog[512];
+    unsigned int shaderProgram;
+    shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+    if (!success)
+    {
+        glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
+        std::cout << "ERROR::SHADER::PROGRAM::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
+
+    return shaderProgram;
+}
+
+void WindowManager::openWindow(const int width, const int height, const std::string& title)
+{
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
@@ -52,7 +119,6 @@ void WindowManager::openWindow(const int width, const int height, const std::str
         glfwTerminate();
         return;
     }
-
     glfwMakeContextCurrent(m_window);
 
     int version = gladLoadGL(glfwGetProcAddress);
@@ -67,54 +133,17 @@ void WindowManager::openWindow(const int width, const int height, const std::str
 
     glfwSetFramebufferSizeCallback(m_window, framebuffer_size_callback);
 
-    unsigned int vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-
-    int success;
-    char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-
-    if (!success)
-    {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-
-    unsigned int fragmentShader;
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-
-    if (!success)
-    {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-
-    unsigned int shaderProgram;
-    shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success)
-    {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::PROGRAM::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
+    unsigned int vertexShader = createVertexShader();
+    unsigned int fragmentShader = createFragmentShader();
+    unsigned int shaderProgram = createShaderProgram(vertexShader, fragmentShader);
 
     glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);  
+    glDeleteShader(fragmentShader);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);  
+    glEnableVertexAttribArray(0);
 
-    float vertices[] = { -0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, 0.0f, 0.5f, 0.0f };  
+    float vertices[] = { -0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, 0.0f, 0.5f, 0.0f };
     unsigned int indices[] = {
         // note that we start from 0!
         0, 1, 3, // first Triangle
@@ -147,11 +176,11 @@ void WindowManager::openWindow(const int width, const int height, const std::str
     // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens.
     // Modifying other VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when
     // it's not directly necessary.
-    glBindVertexArray(0); 
+    glBindVertexArray(0);
 
     while (!glfwWindowShouldClose(m_window))
     {
-        processInput(m_window);
+        processInput();
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
