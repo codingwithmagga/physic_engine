@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.21)
 project(
   "OpenGLWrapper"
   VERSION 0.1.0
-  LANGUAGES CXX
+  LANGUAGES C CXX
 )
 
 set(CMAKE_CXX_STANDARD 20)
@@ -15,9 +15,11 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 #
 # Set project options
 #
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(cmake/AddEigen.cmake)
 include(cmake/AddGLFW.cmake)
+# include(cmake/AddGLAD.cmake)
 
 if (UNIX)
     add_compile_options("$<$<CONFIG:DEBUG>:-D_DEBUG>")    #this will allow to use same _DEBUG macro available in both Linux as well as Windows - MSCV environment. Easy to put Debug specific code.
@@ -47,14 +49,13 @@ find_package(OpenGL REQUIRED)
         ${sources}
   )
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
-target_compile_definitions(${PROJECT_NAME} PRIVATE GLAD_GL_IMPLEMENTATION)
+target_compile_definitions(${PROJECT_NAME} PRIVATE GLAD_GL_IMPLEMENTATION GLFW_INCLUDE_NONE)
 
 #
 # Model project dependencies
 #
 
 # Identify and link with the specific "packages" the project uses
-#find_package(package_name package_version REQUIRED package_type [other_options])
 target_link_libraries(
   ${PROJECT_NAME}
   PUBLIC
@@ -90,7 +91,19 @@ set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
   )
-message(STATUS "Finished setting up include directories.")
+
+target_link_options(
+    ${PROJECT_NAME}
+    PRIVATE
+        "/FORCE:MULTIPLE"
+)
+
+add_custom_command(
+         TARGET ${PROJECT_NAME} POST_BUILD
+         COMMAND ${CMAKE_COMMAND} -E copy_directory              
+             ${CMAKE_CURRENT_SOURCE_DIR}/shaders ${CMAKE_BINARY_DIR}/shaders
+         COMMENT "Copying shaders" VERBATIM
+         )
 
 #
 # Unit testing setup

@@ -1,5 +1,6 @@
 set(sources
     src/window_manager.cpp
+    src/shader_program.cpp
 )
 
 set(headers

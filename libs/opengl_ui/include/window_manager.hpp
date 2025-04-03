@@ -1,22 +1,16 @@
-#include <gl.h>
-
-#include <GLFW/glfw3.h>
+#ifndef WINDOWMANAGER_H
+#define WINDOWMANAGER_H
 
 #include <string>
+
+#include "shader_program.hpp"
 
 class WindowManager
 {
 public:
     WindowManager();
 
-    ~WindowManager()
-    {
-        if (m_window)
-        {
-            glfwDestroyWindow(m_window);
-            glfwTerminate();
-        }
-    }
+    ~WindowManager();
 
     void openWindow(const int width, const int height, const std::string& title);
 
@@ -29,3 +23,5 @@ private:
 
     GLFWwindow* m_window = nullptr;
 };
+
+#endif // WINDOWMANAGER_H
