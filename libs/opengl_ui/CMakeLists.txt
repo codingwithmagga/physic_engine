@@ -92,6 +92,8 @@ set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
         ${CMAKE_CURRENT_SOURCE_DIR}/src
   )
 
+# TODO: Solve this
+# This looks stupid, but without this I'm getting multiple definition errors for including gl.h
 target_link_options(
     ${PROJECT_NAME}
     PRIVATE
