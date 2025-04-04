@@ -24,6 +24,16 @@ void ShaderProgram::use() const
     glUseProgram(m_ID);
 }
 
+void ShaderProgram::setInt(const std::string& name, int value) const
+{
+    glUniform1i(glGetUniformLocation(m_ID, name.c_str()), value);
+}
+
+void ShaderProgram::setFloat(const std::string& name, float value) const
+{
+    glUniform1f(glGetUniformLocation(m_ID, name.c_str()), value);
+}
+
 std::string ShaderProgram::openFile(const std::string& file)
 {
     std::ifstream shaderFile;

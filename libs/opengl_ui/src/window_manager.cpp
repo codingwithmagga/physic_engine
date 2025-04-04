@@ -67,8 +67,8 @@ void WindowManager::openWindow(const int width, const int height, const std::str
 
     glfwSetFramebufferSizeCallback(m_window, framebuffer_size_callback);
 
-    ShaderProgram shaderProgramOrange("shaders/basic_vertex_shader.glsl", "shaders/orange_fragment_shader.glsl");
-    ShaderProgram shaderProgramYellow("shaders/basic_vertex_shader.glsl", "shaders/yellow_fragment_shader.glsl");
+    ShaderProgram shaderProgramOrange("shaders/upside_down_vertex_shader.glsl", "shaders/orange_fragment_shader.glsl");
+    ShaderProgram shaderProgramPosBasedColor("shaders/output_pos_vertex_shader.glsl", "shaders/pos_fragment_shader.glsl");
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -134,7 +134,8 @@ void WindowManager::openWindow(const int width, const int height, const std::str
         glBindVertexArray(VAOs[0]);
         glDrawArrays(GL_TRIANGLES, 0, 3);
         // then we draw the second triangle using the data from the second VAO
-        shaderProgramYellow.use();
+        shaderProgramPosBasedColor.use();
+        shaderProgramPosBasedColor.setFloat("xOffset", 0.1f);
         glBindVertexArray(VAOs[1]);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
