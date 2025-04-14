@@ -90,7 +90,8 @@ set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
         $<BUILD_INTERFACE:${GLAD_GL}>
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
-  )
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/libs/stb>
+)
 
 # TODO: Solve this
 # This looks stupid, but without this I'm getting multiple definition errors for including gl.h
@@ -104,6 +105,8 @@ add_custom_command(
          TARGET ${PROJECT_NAME} POST_BUILD
          COMMAND ${CMAKE_COMMAND} -E copy_directory              
              ${CMAKE_CURRENT_SOURCE_DIR}/shaders ${CMAKE_BINARY_DIR}/shaders
+         COMMAND ${CMAKE_COMMAND} -E copy_directory
+             ${CMAKE_CURRENT_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets
          COMMENT "Copying shaders" VERBATIM
          )
 

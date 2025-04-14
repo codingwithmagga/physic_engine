@@ -1,5 +1,8 @@
 ﻿#include "window_manager.hpp"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 #include <iostream>
 
 WindowManager::WindowManager()
@@ -10,7 +13,6 @@ WindowManager::WindowManager()
         return;
     }
 }
-
 
 WindowManager::~WindowManager()
 {
@@ -67,16 +69,17 @@ void WindowManager::openWindow(const int width, const int height, const std::str
 
     glfwSetFramebufferSizeCallback(m_window, framebuffer_size_callback);
 
-    ShaderProgram shaderProgramOrange("shaders/upside_down_vertex_shader.glsl", "shaders/orange_fragment_shader.glsl");
+    ShaderProgram shaderProgramOrange(
+        "shaders/upside_down_texture_vertex_shader.glsl", "shaders/texture_fragment_shader.glsl");
     ShaderProgram shaderProgramPosBasedColor("shaders/output_pos_vertex_shader.glsl", "shaders/pos_fragment_shader.glsl");
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
     float vertices1[] = {
-        -0.9f,  -0.5f, 0.0f, // left
-        -0.0f,  -0.5f, 0.0f, // right
-        -0.45f, 0.5f,  0.0f,
+        -0.9f,  -0.5f, 0.0f, 0.0f, 1.0f, // left
+        -0.0f,  -0.5f, 0.0f, 1.0f, 1.0f, // right
+        -0.45f, 0.5f,  0.0f, 0.5f, 0.0f,
     };
     float vertices2[] = {
         0.0f,  -0.5f, 0.0f, // left
@@ -96,8 +99,10 @@ void WindowManager::openWindow(const int width, const int height, const std::str
     glBindVertexArray(VAOs[0]);
     glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices1), vertices1, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     glBindVertexArray(VAOs[1]);
     glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
@@ -123,6 +128,29 @@ void WindowManager::openWindow(const int width, const int height, const std::str
 
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+    // Load and generate texture data
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    // set the texture wrapping/filtering options (on the currently bound texture object)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // load and generate the texture
+    int image_width, image_height, nrChannels;
+    unsigned char* data = stbi_load("assets/wall.jpg", &image_width, &image_height, &nrChannels, 0);
+    if (data)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image_width, image_height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
+
     while (!glfwWindowShouldClose(m_window))
     {
         processInput();
@@ -131,8 +159,10 @@ void WindowManager::openWindow(const int width, const int height, const std::str
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         shaderProgramOrange.use();
+        glBindTexture(GL_TEXTURE_2D, texture);
         glBindVertexArray(VAOs[0]);
         glDrawArrays(GL_TRIANGLES, 0, 3);
+
         // then we draw the second triangle using the data from the second VAO
         shaderProgramPosBasedColor.use();
         shaderProgramPosBasedColor.setFloat("xOffset", 0.1f);
