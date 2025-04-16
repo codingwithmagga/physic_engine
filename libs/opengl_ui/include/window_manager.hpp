@@ -4,6 +4,7 @@
 #include <string>
 
 #include "shader_program.hpp"
+#include "texture_manager.hpp"
 
 class WindowManager
 {
@@ -22,6 +23,7 @@ private:
     unsigned int createShaderProgram(const unsigned int vertesShader, const unsigned int fragmenShader) const;
 
     GLFWwindow* m_window = nullptr;
+    TextureManager m_textureManager;
 };
 
 #endif // WINDOWMANAGER_H
