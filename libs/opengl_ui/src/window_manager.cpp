@@ -66,8 +66,8 @@ void WindowManager::openWindow(const int width, const int height, const std::str
 
     glfwSetFramebufferSizeCallback(m_window, framebuffer_size_callback);
 
-    ShaderProgram shaderProgramOrange(
-        "shaders/upside_down_texture_vertex_shader.glsl", "shaders/texture_fragment_shader.glsl");
+    ShaderProgram shaderProgramTextureMix(
+        "shaders/upside_down_texture_vertex_shader.glsl", "shaders/mix_fragment_shader.glsl");
     ShaderProgram shaderProgramPosBasedColor("shaders/output_pos_vertex_shader.glsl", "shaders/pos_fragment_shader.glsl");
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
@@ -126,7 +126,12 @@ void WindowManager::openWindow(const int width, const int height, const std::str
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     // Load and generate texture data
-    unsigned int texture = m_textureManager.loadTexture("assets/wall.jpg");
+    unsigned int textureWall = m_textureManager.loadTexture("assets/wall.jpg");
+    unsigned int textureSmileyFace = m_textureManager.loadTexture("assets/awesomeface.png", true);
+
+    shaderProgramTextureMix.use();
+    shaderProgramTextureMix.setInt("texture1", 0);
+    shaderProgramTextureMix.setInt("texture2", 1);
 
     while (!glfwWindowShouldClose(m_window))
     {
@@ -135,8 +140,12 @@ void WindowManager::openWindow(const int width, const int height, const std::str
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        shaderProgramOrange.use();
-        glBindTexture(GL_TEXTURE_2D, texture);
+        shaderProgramTextureMix.use();
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, textureWall);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, textureSmileyFace);
+
         glBindVertexArray(VAOs[0]);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 

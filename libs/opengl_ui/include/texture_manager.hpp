@@ -1,14 +1,14 @@
 #ifndef TEXTURE_MANAGER_H
 #define TEXTURE_MANAGER_H
 
-#include <string>
+#include <filesystem>
 
 class TextureManager
 {
 public:
     TextureManager();
 
-    unsigned int loadTexture(const std::string& filepath);
+    unsigned int loadTexture(const std::filesystem::path& filepath, const bool flipImage = false);
 };
 
 #endif // TEXTURE_MANAGER_H
