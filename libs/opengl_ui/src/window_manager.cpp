@@ -31,6 +31,16 @@ void WindowManager::processInput()
     {
         glfwSetWindowShouldClose(m_window, true);
     }
+    if (glfwGetKey(m_window, GLFW_KEY_UP) == GLFW_PRESS)
+    {
+        m_mixVal += 0.00025f;
+        m_mixVal = std::min(1.0f, m_mixVal);
+    }
+    if (glfwGetKey(m_window, GLFW_KEY_DOWN) == GLFW_PRESS)
+    {
+        m_mixVal -= 0.00025f;
+        m_mixVal = std::max(0.0f, m_mixVal);
+    }
 }
 
 void WindowManager::openWindow(const int width, const int height, const std::string& title)
@@ -141,6 +151,7 @@ void WindowManager::openWindow(const int width, const int height, const std::str
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         shaderProgramTextureMix.use();
+        shaderProgramTextureMix.setFloat("mixVal", m_mixVal);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textureWall);
         glActiveTexture(GL_TEXTURE1);

@@ -24,6 +24,8 @@ private:
 
     GLFWwindow* m_window = nullptr;
     TextureManager m_textureManager;
+
+    float m_mixVal = 0.2f;
 };
 
 #endif // WINDOWMANAGER_H
