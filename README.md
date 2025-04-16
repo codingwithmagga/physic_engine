@@ -1,6 +1,6 @@
 # Physic Engine with GUI
 
-A C++ library/application using OpenGL to design a physic engine with a gui. Currently working through an [OpenGL] tutorial to add a basic visualisation.
+A C++ library/application using OpenGL to design a physic engine with a gui. Currently working through an [OpenGL](https://learnopengl.com) tutorial to add a basic visualisation.
 
 Ideas:
 
