@@ -1,5 +1,31 @@
 #include "shader_program.hpp"
 
+#include <fstream>
+#include <iostream>
+#include <sstream>
+
+const std::unordered_map<VertexShader, const std::string> ShaderProgram::m_vertexShaderMap = []()
+{
+    std::unordered_map<VertexShader, const std::string> tempMap;
+    tempMap.insert({ VertexShader::BASIC, "shaders/basic_vertex_shader.glsl" });
+    tempMap.insert({ VertexShader::OFFSET, "shaders/offset_vertex_shader.glsl" });
+    tempMap.insert({ VertexShader::OUTPUT_POS, "shaders/output_pos_vertex_shader.glsl" });
+    tempMap.insert({ VertexShader::UPSIDE_DOWN, "shaders/upside_down_vertex_shader.glsl" });
+    tempMap.insert({ VertexShader::UPSIDE_DOWN_TEXTURE, "shaders/upside_down_texture_vertex_shader.glsl" });
+    return tempMap;
+}();
+
+const std::unordered_map<FragmentShader, const std::string> ShaderProgram::m_fragmentShaderMap = []()
+{
+    std::unordered_map<FragmentShader, const std::string> tempMap;
+    tempMap.insert({ FragmentShader::ORANGE, "shaders/orange_fragment_shader.glsl" });
+    tempMap.insert({ FragmentShader::YELLOW, "shaders/yellow_fragment_shader.glsl" });
+    tempMap.insert({ FragmentShader::MIX, "shaders/mix_fragment_shader.glsl" });
+    tempMap.insert({ FragmentShader::POS, "shaders/pos_fragment_shader.glsl" });
+    tempMap.insert({ FragmentShader::TEXTURE, "shaders/texture_fragment_shader.glsl" });
+    return tempMap;
+}();
+
 ShaderProgram::ShaderProgram(const std::string& vertexPath, const std::string& fragmentPath)
 {
     std::string vertexCode = openFile(vertexPath);
@@ -12,6 +38,11 @@ ShaderProgram::ShaderProgram(const std::string& vertexPath, const std::string& f
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
+}
+
+ShaderProgram::ShaderProgram(const VertexShader vertexShader, const FragmentShader fragmentShader)
+    : ShaderProgram(m_vertexShaderMap.at(vertexShader), m_fragmentShaderMap.at(fragmentShader))
+{
 }
 
 ShaderProgram::~ShaderProgram()
@@ -41,16 +72,16 @@ std::string ShaderProgram::openFile(const std::string& file)
 
     try
     {
-        shaderFile.open(file);  
+        shaderFile.open(file);
 
         if (!shaderFile)
         {
             std::cerr << "Unable to open file data.txt\n";
-            return std::string(); 
+            return std::string();
         }
 
-        std::stringstream shaderStream; 
-        shaderStream << shaderFile.rdbuf(); 
+        std::stringstream shaderStream;
+        shaderStream << shaderFile.rdbuf();
 
         shaderFile.close();
 

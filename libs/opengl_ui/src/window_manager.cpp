@@ -76,9 +76,8 @@ void WindowManager::openWindow(const int width, const int height, const std::str
 
     glfwSetFramebufferSizeCallback(m_window, framebuffer_size_callback);
 
-    ShaderProgram shaderProgramTextureMix(
-        "shaders/upside_down_texture_vertex_shader.glsl", "shaders/mix_fragment_shader.glsl");
-    ShaderProgram shaderProgramPosBasedColor("shaders/output_pos_vertex_shader.glsl", "shaders/pos_fragment_shader.glsl");
+    ShaderProgram shaderProgramTextureMix(VertexShader::UPSIDE_DOWN_TEXTURE, FragmentShader::MIX);
+    ShaderProgram shaderProgramPosBasedColor(VertexShader::OUTPUT_POS, FragmentShader::POS);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
