@@ -4,8 +4,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "gl_include_guard.hpp"
-
 enum class VertexShader
 {
     BASIC,

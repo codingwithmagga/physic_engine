@@ -1,10 +1,11 @@
+#include <iostream>
+
+#include "gl_include_guard.hpp"
+
 #include "texture_manager.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-
-// Necessary for GL files
-#include "shader_program.hpp"
 
 TextureManager::TextureManager()
 {

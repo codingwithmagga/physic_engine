@@ -1,6 +1,9 @@
-﻿#include "window_manager.hpp"
+﻿#include <iostream>
 
-#include <iostream>
+#include "gl_include_guard.hpp"
+
+#include "shader_program.hpp"
+#include "window_manager.hpp"
 
 WindowManager::WindowManager()
 {

@@ -1,8 +1,10 @@
-#include "shader_program.hpp"
-
 #include <fstream>
 #include <iostream>
 #include <sstream>
+
+#include "shader_program.hpp"
+
+#include "gl_include_guard.hpp"
 
 const std::unordered_map<VertexShader, const std::string> ShaderProgram::m_vertexShaderMap = []()
 {
