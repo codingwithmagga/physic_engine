@@ -19,6 +19,8 @@ public:
 private:
     void processInput();
 
+    static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+
     GLFWwindow* m_window = nullptr;
     TextureManager m_textureManager;
 

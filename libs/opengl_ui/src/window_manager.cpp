@@ -22,7 +22,7 @@ WindowManager::~WindowManager()
         glfwTerminate();
     }
 }
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+void WindowManager::framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
@@ -74,8 +74,6 @@ void WindowManager::openWindow(const int width, const int height, const std::str
         return;
     }
     std::cout << "Loaded OpenGL " << GLAD_VERSION_MAJOR(version) << "." << GLAD_VERSION_MINOR(version) << std::endl;
-
-    glViewport(0, 0, width, height);
 
     glfwSetFramebufferSizeCallback(m_window, framebuffer_size_callback);
 
